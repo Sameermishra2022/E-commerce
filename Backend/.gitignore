@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Secrets (kabhi push nahi karna)
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db
