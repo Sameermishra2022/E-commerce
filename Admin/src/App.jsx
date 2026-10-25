@@ -8,6 +8,7 @@ import Orders from './pages/Orders'
 import Login from './components/Login'
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Home from './pages/Home'
  
 export const backendurl = import.meta.env.VITE_BACKEND_URL
 export const currency = "Rs. "
@@ -29,7 +30,7 @@ const App = () => {
       <div className='flex w-full'>
         <Sidebar/>
         <div className='w-[70%] mx-auto ml-[max(5vw,25px)] my-8 text-gray-600 text-base'>
-           <Routes>
+           <Routes>\<Route path='/' element={<Home />} />
             <Route path='/add' element={<Add token={token}/>}/>
             <Route path='/list' element={<List token={token}/>}/>
             <Route path='/orders' element={<Orders token={token}/>}/>

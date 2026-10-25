@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="indigoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#4f46e5" flood-opacity="0.3" />
+    </filter>
+  </defs>
+  
+  <!-- Background Rounded Card -->
+  <rect x="32" y="32" width="448" height="448" rx="120" fill="url(#indigoGrad)" filter="url(#shadow)" />
+  
+  <!-- Inner Glossy Overlay Line -->
+  <rect x="48" y="48" width="416" height="200" rx="96" fill="#ffffff" fill-opacity="0.1" />
+
+  <!-- Abstract Minimalist Store / 'A' Monogram Icon -->
+  <path d="M256 130L360 320H152L256 130Z" fill="#ffffff" stroke="#ffffff" stroke-width="16" stroke-linejoin="round" />
+  <circle cx="256" cy="240" r="32" fill="url(#indigoGrad)" />
+</svg>
