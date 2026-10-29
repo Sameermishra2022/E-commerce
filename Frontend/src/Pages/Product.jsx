@@ -17,13 +17,16 @@ const Product = () => {
       const item = products.find((p) => p._id === productId);
       if (item) {
         setProductData(item);
-        setImage(item.image[0]);
+        // Ensure image is safely picked from array or string
+        const firstImg = Array.isArray(item.image) ? item.image[0] : item.image;
+        setImage(firstImg);
       }
     }
   };
 
   useEffect(() => {
     fetchProductData();
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // Page change par top par scroll karega
   }, [productId, products]);
 
   return productData ? (
@@ -37,7 +40,7 @@ const Product = () => {
           
           {/* Thumbnails List */}
           <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-auto justify-start sm:w-24 w-full gap-3 shrink-0 no-scrollbar max-h-[500px] p-1">
-            {productData.image.map((item, index) => (
+            {Array.isArray(productData.image) && productData.image.map((item, index) => (
               <div
                 key={index}
                 onClick={() => setImage(item)}
@@ -52,12 +55,17 @@ const Product = () => {
             ))}
           </div>
 
-          {/* Main Showcase Image Container with Rounded Image & Curved Corners */}
+          {/* Main Showcase Image Container with Sharp Rendering & No Blur */}
           <div className="w-full flex-1 bg-gray-50/90 rounded-3xl overflow-hidden border border-gray-100 shadow-xl flex items-center justify-center p-3 h-[420px] sm:h-[520px]">
             <img
               src={image}
               alt={productData.name}
-              className="w-full h-full object-contain object-top rounded-2xl overflow-hidden transition-all duration-500 hover:scale-105"
+              className="w-full h-full object-cover object-top rounded-2xl overflow-hidden"
+              style={{ 
+                imageRendering: '-webkit-optimize-contrast',
+                backfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
             />
           </div>
         </div>
@@ -104,7 +112,7 @@ const Product = () => {
               <span className="text-xs font-bold text-indigo-600 hover:underline cursor-pointer">Size Guide</span>
             </div>
             <div className="flex flex-wrap gap-3">
-              {productData.sizes.map((item, index) => (
+              {productData.sizes && productData.sizes.map((item, index) => (
                 <button
                   key={index}
                   onClick={() => setSize(item)}
@@ -122,7 +130,13 @@ const Product = () => {
 
           {/* Add To Cart Button */}
           <button
-            onClick={() => addToCart(productData._id, size)}
+            onClick={() => {
+              if (!size) {
+                alert('Please select a product size first!');
+                return;
+              }
+              addToCart(productData._id, size);
+            }}
             className="w-full bg-slate-900 text-white font-extrabold text-xs uppercase tracking-widest py-4.5 rounded-2xl shadow-xl hover:bg-indigo-600 hover:shadow-indigo-200 transition-all duration-300 transform active:scale-95 flex items-center justify-center gap-3 mt-4"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,12 +188,7 @@ const Product = () => {
         <div className="p-6 sm:p-8 text-sm sm:text-base text-gray-600 leading-relaxed space-y-4">
           {activeTab === 'description' ? (
             <>
-              <p>
-                An e-commerce website is an online platform that facilitates the buying and selling of products or services over the internet. It serves as a virtual marketplace where businesses showcase their products, interact with customers, and conduct transactions.
-              </p>
-              <p>
-                E-commerce websites have gained immense popularity due to their convenience, accessibility, and global reach. They allow businesses to connect with a wider audience and provide customers with a seamless shopping experience.
-              </p>
+              <p>{productData.description}</p>
             </>
           ) : (
             <div className="space-y-4">

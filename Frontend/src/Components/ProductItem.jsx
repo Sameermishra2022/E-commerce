@@ -12,12 +12,17 @@ const ProductItem = ({ id, image, name, price }) => {
       className="group block bg-white rounded-2xl p-3 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 ease-out h-full flex flex-col justify-between"
     >
       <div>
-        {/* Image Container with Subtle Border */}
-        <div className="overflow-hidden rounded-xl bg-gray-50 border border-gray-100 aspect-square">
+        {/* Image Container - Image zoom removed */}
+        <div className="w-full h-60 sm:h-64 overflow-hidden rounded-xl bg-gray-50 border border-gray-100 relative">
           <img 
             src={imgSrc} 
             alt={name} 
             className="w-full h-full object-cover object-top"
+            style={{ 
+              imageRendering: '-webkit-optimize-contrast',
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(0)'
+            }}
           />
         </div>
 
