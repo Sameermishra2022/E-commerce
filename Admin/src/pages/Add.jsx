@@ -20,14 +20,12 @@ const Add = ({ token }) => {
   const [sizes, setSizes] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Custom Dropdown States
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [subCategoryOpen, setSubCategoryOpen] = useState(false);
 
   const categoryRef = useRef(null);
   const subCategoryRef = useRef(null);
 
-  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -47,8 +45,9 @@ const Add = ({ token }) => {
 
     document.addEventListener('mousedown', handleClickOutside);
 
-    return () =>
+    return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const onSubmitHandler = async (e) => {
@@ -66,10 +65,10 @@ const Add = ({ token }) => {
       formData.append('sizes', JSON.stringify(sizes));
       formData.append('bestseller', bestSeller);
 
-      image1 && formData.append('image1', image1);
-      image2 && formData.append('image2', image2);
-      image3 && formData.append('image3', image3);
-      image4 && formData.append('image4', image4);
+      if (image1) formData.append('image1', image1);
+      if (image2) formData.append('image2', image2);
+      if (image3) formData.append('image3', image3);
+      if (image4) formData.append('image4', image4);
 
       const response = await axios.post(
         backendurl + '/api/product/add',
@@ -102,64 +101,74 @@ const Add = ({ token }) => {
     }
   };
 
+  const imageStates = [
+    { image: image1, setImage: setImage1 },
+    { image: image2, setImage: setImage2 },
+    { image: image3, setImage: setImage3 },
+    { image: image4, setImage: setImage4 },
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-6 sm:p-10 shadow-xl shadow-slate-200/50">
+    <div className="w-full max-w-4xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8">
 
-        {/* Header Title */}
-        <div className="mb-8 pb-4 border-b border-slate-100 flex items-center justify-between">
-          <div>
-            <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase mb-3 shadow-xs">
-              Catalog Management
-            </span>
+      {/* Main Card */}
+      <div className="w-full bg-white/80 backdrop-blur-xl border border-slate-200/80 rounded-3xl p-4 sm:p-10 shadow-xl shadow-slate-200/50">
 
-            <h1 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
-              Add New Product
-            </h1>
-          </div>
+        {/* Header */}
+        <div className="mb-8 pb-4 border-b border-slate-100">
+          <span className="inline-block px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] sm:text-xs font-black tracking-widest uppercase mb-3 shadow-xs">
+            Catalog Management
+          </span>
+
+          <h1 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+            Add New Product
+          </h1>
         </div>
 
         <form onSubmit={onSubmitHandler} className="flex flex-col gap-6">
 
-          {/* Upload Image Section */}
-          <div>
+          {/* Upload Images */}
+          <div className="w-full min-w-0">
             <p className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
-              Upload Product Images (Up to 4)
+              <span className="w-2 h-2 rounded-full bg-indigo-600 flex-shrink-0"></span>
+              <span>
+                Upload Product Images
+                <br />
+                (Up to 4)
+              </span>
             </p>
 
-            {/* Two Images Per Row on Mobile */}
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-4">
-              {[image1, image2, image3, image4].map((img, index) => {
-                const id = `image${index + 1}`;
+            {/* Mobile: 2 columns | Desktop: flex layout */}
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
 
-                const setImageFn = [
-                  setImage1,
-                  setImage2,
-                  setImage3,
-                  setImage4,
-                ][index];
+              {imageStates.map(({ image, setImage }, index) => {
+                const id = `image${index + 1}`;
 
                 return (
                   <label
                     key={id}
                     htmlFor={id}
-                    className="group relative flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/35 cursor-pointer transition-all overflow-hidden shadow-xs"
+                    className="group relative flex items-center justify-center w-full min-w-0 aspect-square sm:w-28 sm:h-28 sm:aspect-auto border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/35 cursor-pointer transition-all overflow-hidden shadow-xs"
                   >
                     <img
                       className={`${
-                        !img
+                        !image
                           ? 'w-8 h-8 opacity-40 group-hover:scale-110'
                           : 'w-full h-full object-cover'
                       } transition-transform duration-300`}
-                      src={!img ? assets.upload : URL.createObjectURL(img)}
-                      alt="Upload slot"
+                      src={
+                        !image
+                          ? assets.upload
+                          : URL.createObjectURL(image)
+                      }
+                      alt="Upload product"
                     />
 
                     <input
-                      onChange={(e) =>
-                        setImageFn(e.target.files[0])
-                      }
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) setImage(file);
+                      }}
                       type="file"
                       id={id}
                       accept="image/*"
@@ -168,6 +177,7 @@ const Add = ({ token }) => {
                   </label>
                 );
               })}
+
             </div>
           </div>
 
@@ -187,7 +197,7 @@ const Add = ({ token }) => {
             />
           </div>
 
-          {/* Product Description */}
+          {/* Description */}
           <div className="w-full">
             <label className="block text-sm font-bold text-slate-700 mb-2">
               Product Description
@@ -203,10 +213,10 @@ const Add = ({ token }) => {
             />
           </div>
 
-          {/* Category, SubCategory & Price Grid */}
+          {/* Category, Subcategory and Price */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-2xl relative">
 
-            {/* Custom Category Dropdown */}
+            {/* Category */}
             <div className="relative" ref={categoryRef}>
               <label className="block text-sm font-bold text-slate-700 mb-2">
                 Category
@@ -257,7 +267,7 @@ const Add = ({ token }) => {
               )}
             </div>
 
-            {/* Custom SubCategory Dropdown */}
+            {/* Subcategory */}
             <div className="relative" ref={subCategoryRef}>
               <label className="block text-sm font-bold text-slate-700 mb-2">
                 Sub Category
@@ -308,7 +318,7 @@ const Add = ({ token }) => {
               )}
             </div>
 
-            {/* Product Price */}
+            {/* Price */}
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">
                 Product Price ($)
@@ -317,15 +327,16 @@ const Add = ({ token }) => {
               <input
                 onChange={(e) => setPrice(e.target.value)}
                 value={price}
-                className="w-full px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
+                className="w-full min-w-0 px-4 py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-slate-800 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition-all"
                 type="number"
                 placeholder="99"
                 required
               />
             </div>
+
           </div>
 
-          {/* Product Sizes */}
+          {/* Sizes */}
           <div>
             <label className="block text-sm font-bold text-slate-700 mb-2">
               Product Sizes
@@ -358,7 +369,7 @@ const Add = ({ token }) => {
             </div>
           </div>
 
-          {/* Bestseller Checkbox */}
+          {/* Bestseller */}
           <div className="flex items-center gap-3 pt-2">
             <input
               onChange={() => setBestSeller((prev) => !prev)}
